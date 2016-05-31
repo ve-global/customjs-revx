@@ -1,14 +1,17 @@
 
 var onTagPageLoad =(function(window) {
 	
-	if (!needsToRun()) {
-		return;
+	function needsToRun() {
+		var url;
+		for (var i = config.length - 1; i >= 0; i--) {
+			url = config[i].url;
+			if (window.location.hostname === url){	//Maybe you need more logic for urls that are not fully matching
+				return config[i];
+			}
+		}
+		return false;
 	}
 
-	var common_config = {
-		atm_params.channel: getDevice(),
-		_atm_client_id: "6840",
-	};
 	var config = [{
 		url:' https://www.sendmygift.com/checkout/onepage',
 		text: 'RevX remarketing tag checkout page',
@@ -38,6 +41,62 @@ var onTagPageLoad =(function(window) {
 
 	}];
 
+
+
+	var urlConfig = needsToRun();
+
+	if (!urlConfig) {
+		return;
+	}
+	/*If it comes here you would have somthing like this: 
+	{
+		url:' https://www.sendmygift.com/checkout/onepage',
+		text: 'RevX remarketing tag checkout page',
+		params: {
+			_atm_params.t : 'r',
+			_atm_params.id:''
+			_atm_params.sprc : getQuoteBaseGrandTotal()
+		}
+
+	}
+
+	*/
+
+	// First thing
+	console.log(urlConfig.text); 
+
+	// Second. Get all the params needed, either from page or from google.
+
+	window._atm_client_id = "6840";
+	window._atm_params = {};
+	window._atm_params.t = "r";
+
+	// Third. Get all values from Google
+	if (window.google_tag_params ) {
+		_atm_params.id= window.google_tag_params.ecomm_prodid;
+		_atm_params.sprc = window.google_tag_params.ecomm_totalvalue;
+
+		createPixel();
+	} else {
+		getAsyncValue(window.google_tag_params,'ecomm_prodid', function (value) {
+			_atm_params.id= value;
+
+			createPixel();
+		})
+	}
+
+	function createPixel() {
+
+	}
+
+	var common_config = {
+		atm_params.channel: getDevice(),
+		_atm_client_id: "6840"
+	};
+
+
+	
+
 	setTimeout(function(){
 
 		if (config[i].isVeinteractive) {
@@ -58,7 +117,7 @@ var onTagPageLoad =(function(window) {
 		for (var i = config.length - 1; i >= 0; i--) {
 			url = config[i].url;
 			if (window.location.hostname === url){	//Maybe you need more logic for urls that are not fully matching
-				return true;
+				return config[i];
 			}
 		}
 		return false;
@@ -72,5 +131,18 @@ var onTagPageLoad =(function(window) {
 		return '';
 	}
 
+
+function getAsyncValue(object,key, callback) {
+	var timerId = window.setInterval(function(){
+		if(object && object[key]) {
+			callback(object[key]);
+			clerInterval(timerId);
+		}
+	},500); 
+}
+
 }(window,document));
+
+
+
 
