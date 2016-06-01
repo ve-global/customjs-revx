@@ -2,11 +2,12 @@
 var onTagPageLoad = (function(window,document) {
 	var settings = {
 		clientId: '6840',
-		domain: 'sendmygift',
+		domain: 'sendmygift.com',
 		journeycode: '76B8CA61-D900-47E1-B544-55D8D04919BB',
 		veHostDomain: 'cdsch2',
 		default_atm_params: {
-			t: 'r'
+			t: 'r',
+			channel: getDevice()
 		},
 		webpages:[{
 			name: 'Homepage',
@@ -129,8 +130,11 @@ var onTagPageLoad = (function(window,document) {
 		// 2.-. Get all the params needed. These are common.
 		window._atm_client_id = settings.clientId;
 		window._atm_params = {};
-		window._atm_params.t = settings.default_atm_params.t;
-		window._atm_params.channel = getDevice();
+		for(var defaultParam in settings.default_atm_params){
+			if (settings.default_atm_params).hasOwnProperty(defaultParam)) {
+				window._atm_params[defaultParam] = settings.default_atm_params[defaultParam];
+			}
+		}
 
 		// 3.- Needs to wait for Google tracking values
 		if (urlSettings.needsGlobalParams) { 
@@ -141,7 +145,7 @@ var onTagPageLoad = (function(window,document) {
 		}
 
 		function setGlobalVariables() {
-			for(param in urlSettings.atm_params){
+			for(var param in urlSettings.atm_params){
 				if (urlSettings.atm_params).hasOwnProperty(param)) {
 					window._atm_params[param] = getValue(urlSettings.atm_params[param]);
 				}
