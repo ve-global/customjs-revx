@@ -2,7 +2,7 @@
 		clientId: '6861',
 		domain: 'www.industrybuying.com',
 		journeycode: 'B866791F-F789-47CD-8A75-BFF8E79451F7',
-		veHostDomain: 'cdsch2',
+		veHostDomain: 'cdsch2.veinteractive.com',
 		default_atm_params: {
 			t: 'r',
 			channel: getDevice()
@@ -23,103 +23,75 @@
 			needsGoogleParams: window.google_tag_params,
 			atm_params: {
 				f: 'b',
-				c: getNumberFromUrl(),  //category id
+				c: getNumberFromHref(1,''),  //category id
 				cn: getValueBySelector('.row.brandheading h1') //category name
 			}
 		},{
 			name: 'SubCategory',
 			url: {
-				regexp: '/[a-z]*.html/'   
+				selector: '#product_filters #AH_CategoryListView h3'    
 			},
 			needsGoogleParams: window.google_tag_params,
 			atm_params: {
 				f: 'b',
-				c: getNumberFromUrl(),  //category id
-				cn: getValueBySelector('.row.brandheading h1'), //category name,
-				scn: '',//subcategory name
-				sc:  ''//subcategory id
+				c: getNumberFromHref(1,''),  //category id
+				cn: getValueBySelector(".innerContainerWrap .leafSearchBreadCrums a [itemprop='name']"), //category name,
+				scn: getValueBySelector(".innerContainerWrap .leafSearchBreadCrums span span [itemprop='name']"),//subcategory name
+				sc:  getNumberFromHref(4,'')//subcategory id
 			}
 		},{
 			name: 'Product',
 			url: {
-				regexp: '/[a-z]*.html/',   //syntax
-				selector: '.quick-overview'
+				selector: '.prodDetailPage .product_info h2' 
 			},
 			atm_params: {
 				f: 'c',
-				needsGoogleParams: window.google_tag_params,
-				cn: {
-					selector: '.container .breadcrumbs li:nth-child(2) span'
-				},
-				oprc: {
-					selector:'.product-shop .price-box .old-price .price'
-				},
-				id: {
-					google: 'ecomm_prodid'
-				},
-				sprc: {
-					google: 'ecomm_totalvalue'
-				}
+				cn: getValueBySelector(".prodDetailPage .commonBreadCrums a [itemprop='name']"),//category name
+				scn: getValueBySelector(".prodDetailPage .commonBreadCrums #bc1 [itemprop='name']"),//subcategory name
+				c: getNumberFromHref(3,'.prodDetailPage .commonBreadCrums #bc1 a'), //category id
+				sc: getNumberFromHref(6,'.prodDetailPage .commonBreadCrums #bc1 a'),  //subcategory id
+				oprc: getValueBySelector("#AH_ListPrice"),  //original price
+				id: getValueBySelector(".prodDetailPage .product_info .product_infotable li:nth-child(1) div:nth-child(2)"), //sku
+				sprc: getValueBySelector("#AH_PricePerPiece") //sale price
 			}
 		},{
 			name: 'Basket',
 			url: {
-				path: 'checkout/cart'
+				path: '/order/cart/'
 			},
 			needsGoogleParams: window.google_tag_params,
 			atm_params: {
 				f: 's',
-				id: {
-					google: 'ecomm_prodid'
-				},
-				sprc: {
-					google: 'ecomm_totalvalue'
-				}
+				id:  getListProductId('.cart_page .item_details h6'),  //product id, pass coma if >1 product added
+				sprc: getValueBySelector(".grand_totalbg .price-area #order_total")//total basket
 			}
 
 		},{
 			name: 'Checkout',
 			url: {
-				path: 'checkout/onepage'
+				path: '/order/checkout/'
 			},
 			atm_params: {
 				f: 's',
-				id: '',	//MATT. Why Empty? shouldn't be google: 'ecomm_prodid'?
-				sprc: {
-					globalVar: '' // MATT: What is this?
-				}
+				//id: getProductIdBasket(),  //product id, pass coma if >1 product added
+				sprc: getValueBySelector(".grand_totalbg #order_total").replace('&nbsp;','')//total basket
 			}
 		},{
 			name: 'Conversion',
 			url: {
-				path: 'checkout/onepage/success'
+				selector: '.thankyou .header-line'
 			},
 			needsGoogleParams: window.google_tag_params,
 			atm_params: {
 				f: 'p',
-				id:{
-					google: 'ecomm_prodid'
-				},
-				sprc: {
-					google: 'ecomm_totalvalue'
-				}
+				id:  getListProductId('.item_details_payment h6'),
+				sprc: getValueBySelector("#order_value_for_pixels")  //total amount paid
 			},
 
 			isConversionPage: {
-				orderId: {
-					func: function(){
-						var elem = document.querySelector(".container p"); // MATT. this selector is not very good
-						if (elem) {
-							var innerHTML = elem.innerHTML;
-							//return innerHTML.substr(0,40).replace(/\D/g,''); //MATT. this is veeeery dodgy
-						}
-						return '';
-					}
-				},
-				orderValue: {
-					google: 'ecomm_totalvalue'
-				},
-				pixelId: '10850'	//MATT. Is this correct?
+				orderId: '',
+				orderValue: '',
+				pixelId: ''
 			}
 		}]
 	};
@@ -182,14 +154,7 @@
 
 			// 6B.- If it is the conversion page adds both the Pixel from Ve and the JS tracback from atomex
 			if (urlSettings.isConversionPage) {
-
 				createPixel(config.vePixelUrl);
-
-				var pixelSettings = urlSettings.isConversionPage;
-				var orderId = getValue(pixelSettings.orderId);
-				var orderValue = getValue(pixelSettings.orderValue);
-
-				createJS(config.getTrackBackUrl(pixelSettings.pixelId, orderId, orderValue ));
 			}
 
 		}
@@ -270,11 +235,79 @@
 		return '';
 	}
 
-	function getNumberFromUrl(){
-		var webUrl = window.location.pathname;
-		var regexpNumber = '[0-9]+';
-		return webUrl.match(regexpNumber);
+	function getNumberFromHref(type,selector){
+		switch(type){
+			case 1:
+				var hrefValue = window.location.pathname;  
+					if(hrefValue){
+						var pattern = new RegExp("[0-9]+");
+						return hrefValue.match(pattern); //return null if no match
+					}
+					return '';
+				break;
+			case 2: 
+				var hrefValue = document.querySelector(selector);
+					if(hrefValue){
+						hrefValue = document.querySelector(selector).trim();
+						var pattern = new RegExp("[0-9]+");
+						return hrefValue.match(pattern); //return null if no match
+					}
+					return '';
+				break;
+			case 3: 
+				var hrefValue = document.querySelector(selector);
+					if(hrefValue){
+						hrefValue = document.querySelector(selector).href;
+						var pattern = new RegExp("[0-9]+");
+						return hrefValue.match(pattern); //return null if no match
+					}
+					return '';
+				break;
+			case 4:
+				var hrefValue = window.location.pathname;  
+					if(hrefValue){
+						var pattern = new RegExp("[0-9]+", "g");
+						if(hrefValue.match(pattern)!=null && hrefValue.match(pattern).length>1){
+						return hrefValue.match(pattern)[1]; //return null if no match
+						}
+					}
+					return '';
+				break;
+			case 5: 
+				var hrefValue = document.querySelector(selector);
+					if(hrefValue){
+						hrefValue = document.querySelector(selector).trim();
+						var pattern = new RegExp("[0-9]+", "g");
+						return hrefValue.match(pattern)[1]; //return null if no match
+					}
+					return '';
+				break;
+			case 6: 
+				var hrefValue = document.querySelector(selector);
+					if(hrefValue){
+						hrefValue = document.querySelector(selector).href;
+						var pattern = new RegExp("[0-9]+", "g");
+						return hrefValue.match(pattern)[1]; //return null if no match
+					}
+					return '';
+				break;
 		}
+	}	
+
+	function getListProductId(selector){
+		var element = document.querySelectorAll(selector);
+		if(element){
+			var basket = [];
+			for (var i = element.length - 1; i >= 0; i--) {  
+				if (element[i]){   
+					basket[i] = element[i].getAttribute("data-sku");  
+				}
+			}
+			return basket.toString();
+		}
+		return '';
+	}
+
 
 	function createJS(url) {
 		var ast = document.createElement('script'); 
