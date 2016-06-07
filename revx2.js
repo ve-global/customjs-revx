@@ -37,7 +37,7 @@
 				c: getNumberFromHref(1,''),  //category id
 				cn: getValueBySelector(".innerContainerWrap .leafSearchBreadCrums a [itemprop='name']"), //category name,
 				scn: getValueBySelector(".innerContainerWrap .leafSearchBreadCrums span span [itemprop='name']"),//subcategory name
-				sc:  getNumberFromHref(4,'')//subcategory id
+				sc:  getNumberFromHref(3,'')//subcategory id
 			}
 		},{
 			name: 'Product',
@@ -48,8 +48,8 @@
 				f: 'c',
 				cn: getValueBySelector(".prodDetailPage .commonBreadCrums a [itemprop='name']"),//category name
 				scn: getValueBySelector(".prodDetailPage .commonBreadCrums #bc1 [itemprop='name']"),//subcategory name
-				c: getNumberFromHref(3,'.prodDetailPage .commonBreadCrums #bc1 a'), //category id
-				sc: getNumberFromHref(6,'.prodDetailPage .commonBreadCrums #bc1 a'),  //subcategory id
+				c: getNumberFromHref(2,'.prodDetailPage .commonBreadCrums #bc1 a'), //category id
+				sc: getNumberFromHref(4,'.prodDetailPage .commonBreadCrums #bc1 a'),  //subcategory id
 				oprc: getValueBySelector("#AH_ListPrice"),  //original price
 				id: getValueBySelector(".prodDetailPage .product_info .product_infotable li:nth-child(1) div:nth-child(2)"), //sku
 				sprc: getValueBySelector("#AH_PricePerPiece") //sale price
@@ -176,9 +176,9 @@
 
 	function needsToRun(conf) {
 		var url;
-		for (var i = conf.webpages.length - 1; i >= 0; i--) {  // was conf.length 
-			if (matchWebPage(conf.webpages[i].url)){   // was conf[i].url
-				return conf.webpages[i];  //same
+		for (var i = conf.webpages.length - 1; i >= 0; i--) {  
+			if (matchWebPage(conf.webpages[i].url)){   
+				return conf.webpages[i];  
 			}
 		}
 		return false;
@@ -237,7 +237,7 @@
 
 	function getNumberFromHref(type,selector){
 		switch(type){
-			case 1:
+			case 1:  //return first number from pathname
 				var hrefValue = window.location.pathname;  
 					if(hrefValue){
 						var pattern = new RegExp("[0-9]+");
@@ -245,16 +245,8 @@
 					}
 					return '';
 				break;
-			case 2: 
-				var hrefValue = document.querySelector(selector);
-					if(hrefValue){
-						hrefValue = document.querySelector(selector).trim();
-						var pattern = new RegExp("[0-9]+");
-						return hrefValue.match(pattern); //return null if no match
-					}
-					return '';
-				break;
-			case 3: 
+		
+			case 2:  //return first number from href value
 				var hrefValue = document.querySelector(selector);
 					if(hrefValue){
 						hrefValue = document.querySelector(selector).href;
@@ -263,7 +255,7 @@
 					}
 					return '';
 				break;
-			case 4:
+			case 3:  //return second number from pathname
 				var hrefValue = window.location.pathname;  
 					if(hrefValue){
 						var pattern = new RegExp("[0-9]+", "g");
@@ -273,16 +265,8 @@
 					}
 					return '';
 				break;
-			case 5: 
-				var hrefValue = document.querySelector(selector);
-					if(hrefValue){
-						hrefValue = document.querySelector(selector).trim();
-						var pattern = new RegExp("[0-9]+", "g");
-						return hrefValue.match(pattern)[1]; //return null if no match
-					}
-					return '';
-				break;
-			case 6: 
+		
+			case 4:  //return second number from href value
 				var hrefValue = document.querySelector(selector);
 					if(hrefValue){
 						hrefValue = document.querySelector(selector).href;
