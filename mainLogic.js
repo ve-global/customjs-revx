@@ -1,5 +1,8 @@
+{onTagPageLoad: (function(window) {
+setTimeout(function(){
+    var settings = veTagData.settings.customRevx;
 
-        var config = {
+    var config = {
         getLog: function (t) { return 'RevX remarketing tag ' + t + ' page';},
         getScriptUrl: function (id) {return document.location.protocol + '//cdn.atomex.net/static/js/pxs/' + id + '/ast.js';},
         getTrackBackUrl: function(px, id, value) { return document.location.protocol + '//trk.atomex.net/cgi-bin/tracker.fcgi/conv?px='+px+'&ty=1&tid='+ id + '&tamt=' + value;},
@@ -287,6 +290,17 @@ var uniq = basket.reduce(function(a,b){
         }
     }
 
+    function getValueAndReplace (selector, replacement) {
+        var value = getValueBySelector(selector);
+        if (value) {
+            return value.replace(replacement, '');
+        }
+    }
+
+
     function getDevice(){
         return ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) ? 'm' : 'd';
     }
+    
+ },1);
+})(window)}
