@@ -1,4 +1,5 @@
-# customjs-revx   var urlVe = window.location.href;
+# customjs-revx   
+    var urlVe = window.location.href;
     var settings = {
         clientId: '6911',
         domain: 'www.uniqlo.com/',
@@ -86,9 +87,3 @@
         }]
     };
 
-    var config = {
-        getLog: function (t) { return 'RevX remarketing tag ' + t + ' page';},
-        getScriptUrl: function (id) {return document.location.protocol + '//cdn.atomex.net/static/js/pxs/' + id + '/ast.js';},
-        getTrackBackUrl: function(px, id, value) { return document.location.protocol + '//trk.atomex.net/cgi-bin/tracker.fcgi/conv?px='+px+'&ty=1&tid='+ id + '&tamt=' + value;},
-        vePixelUrl: '//' + settings.veHostDomain + '/DataReceiverService.asmx/Pixel?journeycode=' + settings.journeycode
-    };
