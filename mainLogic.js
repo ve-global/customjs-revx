@@ -2,7 +2,7 @@
 setTimeout(function(){
     var settings = veTagData.settings.customRevx;
 
-    var config = {
+ var config = {
         getLog: function (t) { return 'RevX remarketing tag ' + t + ' page';},
         getScriptUrl: function (id) {return document.location.protocol + '//cdn.atomex.net/static/js/pxs/' + id + '/ast.js';},
         getTrackBackUrl: function(px, id, value) { return document.location.protocol + '//trk.atomex.net/cgi-bin/tracker.fcgi/conv?px='+px+'&ty=1&tid='+ id + '&tamt=' + value;},
@@ -198,66 +198,45 @@ setTimeout(function(){
                 var hrefValue = document.querySelector(selector);
                     if(hrefValue){
                         hrefValue = document.querySelector(selector).innerHTML;
-                        var vePattern = new RegExp("[0-9]+[.]+[0-9]+");
-                        hrefValue = hrefValue.replace(/,/g,''); //remove coma
-                        return hrefValue.match(vePattern); //return null if no match
+                        hrefValue = hrefValue.match("[0-9]+");
+                        return hrefValue; //return null if no match
+                    }
+                    return '';
+                break;
+
+                      case 7:  //return input value
+                var hrefValue = document.querySelector(selector);
+                    if(hrefValue){
+                        hrefValue = document.querySelector(selector).value;
+                        return hrefValue; //return null if no match
                     }
                     return '';
                 break;
         }
     }   
 
-    function getListProductId(selector){
+    function getListProductId(selector,regex){
         var element = document.querySelectorAll(selector);
         if(element){
             var basket = [];
-            var vePattern = new RegExp("thumb/(.*)a.jpg");
+            var vePattern = new RegExp(regex);
             for (var i = element.length - 1; i >= 0; i--) {  
-                if (element[i]){   
-                    basket[i] = element[i].src.match(vePattern)[1]; 
+                if (element[i]){  
+                    basket[i] = element[i].src.match(vePattern)[0]; 
                 }
             }
-            return basket;
+            return basket.toString();
         }
         return '';
     }
 
-       function getListProductId2(selector){
-        var element = jQuery(selector);
-        if(element){
-            var basket = [];
-            var vePattern = new RegExp("thumb/(.*)a.jpg");
-            for (var i = element.length - 1; i >= 0; i--) {  
-                if (element[i]){   
-                   basket[i] = element[i].src.match(vePattern)[1]; 
-                }
-            }
-
-var uniq = basket.reduce(function(a,b){
-    if (a.indexOf(b) < 0 ) a.push(b);
-    return a;
-  },[]);
-
-           return uniq;
-
-         }
-        return '';
-    }
 
 
-    function customBasket(selector){
-        var customBasketValue = getValueBySelector(selector);
-        if (customBasketValue){
-            customBasketValue = customBasketValue.replace(/,/g, '');
-            return customBasketValue;
-        }
-    }
-
-       function customProduct(selector){
-        var customProductValue = getValueBySelector(selector);
-        if (customProductValue){
-            customProductValue = customProductValue.replace('SKU ID : ', '');
-            return customProductValue;
+    function replaceValue(selector,replace){
+        var customRepalceValue = getValueBySelector(selector);
+        if (customRepalceValue){
+            customRepalceValue = customRepalceValue.replace(replace, '');
+            return customRepalceValue;
         }
     }
 
