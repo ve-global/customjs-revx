@@ -225,15 +225,17 @@ setTimeout(function(){
     }
 
 
-
-    function replaceValue(selector,replace){
-        var customRepalceValue = getValueBySelector(selector);
-        if (customRepalceValue){
-            customRepalceValue = customRepalceValue.replace(replace, '');
-            return customRepalceValue;
+    function replaceValue(selector,replace1,replace2){
+        var element = document.querySelector(selector);
+        if (element && replace2){
+            element = element.replace(replace1,replace2);
+            return element;
+        }
+          if (element){
+            element = element.replace(replace1,'');
+            return element;
         }
     }
-
 
     function createJS(url) {
         var ast = document.createElement('script'); 
@@ -260,13 +262,6 @@ setTimeout(function(){
                     return callback(object[key]);
                 }
             },500); 
-        }
-    }
-
-    function getValueAndReplace (selector, replacement) {
-        var value = getValueBySelector(selector);
-        if (value) {
-            return value.replace(replacement, '');
         }
     }
 
