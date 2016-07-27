@@ -226,7 +226,7 @@ setTimeout(function(){
 
 
     function replaceValue(selector,replace1,replace2){
-        var element = document.querySelector(selector);
+        var element = getValueBySelector(selector);
         if (element && replace2){
             element = element.replace(replace1,replace2);
             return element;
