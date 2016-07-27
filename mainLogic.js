@@ -134,9 +134,12 @@ setTimeout(function(){
         }
     }
 
-    function getValueBySelector(selector) {
+    function getValueBySelector(selector,attribute) {
         var element = document.querySelector(selector);
-        if(element){
+        if(element && attribute){
+            return element.getAttribute(attribute);
+        }
+         if(element){
             return element.innerHTML.trim();
         }
         return '';
@@ -199,15 +202,6 @@ setTimeout(function(){
                     if(hrefValue){
                         hrefValue = document.querySelector(selector).innerHTML;
                         hrefValue = hrefValue.match("[0-9]+");
-                        return hrefValue; //return null if no match
-                    }
-                    return '';
-                break;
-
-                      case 7:  //return input value
-                var hrefValue = document.querySelector(selector);
-                    if(hrefValue){
-                        hrefValue = document.querySelector(selector).value;
                         return hrefValue; //return null if no match
                     }
                     return '';
