@@ -76,7 +76,7 @@
             atm_params: {
                 f: 'p',
               tid: getValueBySelector('.odr-nbr'),
-              tamt: jQuery('#refcandy-mint').attr("data-amount") //total amount paid
+              tamt: getValueBySelector('#refcandy-mint','data-amount') //total amount paid
             }
 
          //   isConversionPage: {
