@@ -1,5 +1,4 @@
 # customjs-revx   
-    var urlVe = window.location.href;
     var settings = {
         clientId: '6911',
         domain: 'www.uniqlo.com/',
@@ -26,7 +25,7 @@
             atm_params: {
                 f: 'b',
             //  c: getNumberFromHref(1,''),  //category id
-                cn: urlVe.substr(urlVe.lastIndexOf('/') + 1).replace('.html','')//category name
+              //  cn:   getValueBySelector(".pathdetail a:nth-child(1)")     //category name
             }
         },
       {
