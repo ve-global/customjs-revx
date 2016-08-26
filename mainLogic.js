@@ -1,6 +1,6 @@
 {onTagPageLoad: (function(window) {
 setTimeout(function(){
-    var settings = veTagData.settings.customRevx;
+ //   var settings = ;
 
  var config = {
         getLog: function (t) { return 'RevX remarketing tag ' + t + ' page';},
