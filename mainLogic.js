@@ -148,11 +148,11 @@ setTimeout(function(){
     function getNumberFromHref(type,selector){
         switch(type){
             case 1:  //return first number from pathname
-                var hrefValue = window.location.pathname; 
-                var hrefValueSelector = document.querySelector(selector);  
+                         var pattern = new RegExp("[0-9]+");
+                        return hrefValue.match(pattern); //return null if no match 
                     if(hrefValue && hrefValueSelector){
-                        var pattern = new RegExp("\/([0-9]+)\/");
-                        return hrefValue.match(pattern)[1]; //return null if no match
+                      var pattern = new RegExp("[0-9]+");
+                        return hrefValue.match(pattern); //return null if no match
                     }
                     return '';
                 break;
